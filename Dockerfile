@@ -6,7 +6,7 @@ RUN apt-get install dos2unix
 
 ENV CRON_TIME="0 3 * * *" \
   TZ=Asia/Tehran \
-  CRON_TZ=Asia/Tehra
+  CRON_TZ=Asia/Tehran
 
 ADD run.sh ./run.sh
 RUN chmod +x ./run.sh
