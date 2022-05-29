@@ -22,7 +22,7 @@ jobs:
        uses: docker/login-action@v2
        with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
     -
       name: Set up Docker Buildx
@@ -41,5 +41,5 @@ jobs:
         file: ./Dockerfile
         push: true
 #         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mongodb-backup-arvan-s3:${{ github.sha }}-${{ steps.date.outputs.date }}
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mongodb-backup-arvan-s3:${{ github.sha }}
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mongodb-backup-arvan-s3:${{ github.sha::8 }}
 
