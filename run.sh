@@ -34,7 +34,7 @@ cat <<EOF >> /backup.sh
 #!/bin/bash
 cp /.s3cfg /data/db/.s3cfg
 cp /.s3cfg /root/.s3cfg
-TIMESTAMP=\`/bin/date +"%Y%m%dT%H%M%S"\`
+TIMESTAMP=\`/bin/date +"%Y-%m-%dT%H:%M:%S"\`
 BACKUP_NAME=\${TIMESTAMP}.dump.gz
 S3BACKUP=${S3PATH}\${BACKUP_NAME}
 S3LATEST=${S3PATH}latest.dump.gz
