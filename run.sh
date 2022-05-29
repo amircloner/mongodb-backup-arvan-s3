@@ -8,7 +8,7 @@ MONGODB_USER=${MONGODB_USER:-${MONGODB_ENV_MONGODB_USER}}
 MONGODB_PASS=${MONGODB_PASS:-${MONGODB_ENV_MONGODB_PASS}}
 
 S3PATH="s3://$S3_BUCKET/"
-cat <<EOF >> ~/.s3cfg
+cat <<EOF >> /.s3cfg
 [default]
 access_key = ${ARVAN_ACCESS_KEY}
 secret_key = ${ARVAN_SECRET_KEY}
@@ -32,12 +32,14 @@ echo "=> Creating backup script"
 rm -f /backup.sh
 cat <<EOF >> /backup.sh
 #!/bin/bash
+cp /.s3cfg /data/db/.s3cfg
+cp /.s3cfg /root/.s3cfg
 TIMESTAMP=\`/bin/date +"%Y%m%dT%H%M%S"\`
 BACKUP_NAME=\${TIMESTAMP}.dump.gz
 S3BACKUP=${S3PATH}\${BACKUP_NAME}
 S3LATEST=${S3PATH}latest.dump.gz
 echo "=> Backup started"
-if mongodump --host ${MONGODB_HOST} --port ${MONGODB_PORT} ${USER_STR}${PASS_STR}${DB_STR} --archive=\${BACKUP_NAME} --gzip ${EXTRA_OPTS} && s3cmd put \${BACKUP_NAME} \${S3BACKUP} && s3cmd put \${S3BACKUP} \${S3LATEST} && rm \${BACKUP_NAME} ;then
+if mongodump --host ${MONGODB_HOST} --port ${MONGODB_PORT} ${USER_STR}${PASS_STR} --authenticationDatabase=admin --archive=\${BACKUP_NAME} --gzip ${EXTRA_OPTS} && s3cmd put \${BACKUP_NAME} \${S3BACKUP} && s3cmd put \${BACKUP_NAME} \${S3LATEST} && rm \${BACKUP_NAME} ;then
     echo "   > Backup succeeded"
 else
     echo "   > Backup failed"
@@ -94,7 +96,7 @@ if [ -n "${INIT_RESTORE}" ]; then
 fi
 
 if [ -z "${DISABLE_CRON}" ]; then
-    echo "${CRON_TIME} . /root/project_env.sh; /backup.sh >> /mongo_backup.log 2>&1" > /crontab.conf
+    echo "${CRON_TIME} . /backup.sh >> /mongo_backup.log 2>&1" > /crontab.conf
     crontab  /crontab.conf
     echo "=> Running cron job"
     cron && tail -f /mongo_backup.log
