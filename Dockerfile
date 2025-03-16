@@ -1,4 +1,4 @@
-FROM mongo
+FROM mongo:8
 
 RUN rm /etc/apt/sources.list.d/mongodb-org.list
 RUN apt-get update && apt-get -y install cron s3cmd
